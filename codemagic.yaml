@@ -1,0 +1,22 @@
+workflows:
+  android-debug:
+    name: Wireless Charge Controller - Debug APK
+    max_build_duration: 45
+    instance_type: linux_x2
+    environment:
+      java: 17
+    scripts:
+      - name: Configure Android SDK
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+      - name: Install Gradle 8.9 if needed
+        script: |
+          if ! command -v gradle >/dev/null 2>&1; then
+            curl -L https://services.gradle.org/distributions/gradle-8.9-bin.zip -o /tmp/gradle-8.9-bin.zip
+            unzip -q /tmp/gradle-8.9-bin.zip -d /tmp
+            export PATH="/tmp/gradle-8.9/bin:$PATH"
+          fi
+          gradle --version
+          gradle assembleDebug
+    artifacts:
+      - app/build/outputs/apk/debug/*.apk
